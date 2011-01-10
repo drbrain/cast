@@ -2,7 +2,7 @@ require 'rbconfig'
 
 ######################################################################
 #
-# A C preprocessor that wraps the command in Config::CONFIG['CPP'].
+# A C preprocessor that wraps the command in RbConfig::CONFIG['CPP'].
 #
 # Assumes a POSIX-style cpp command line interface, in particular, -I
 # and -D options.
@@ -17,7 +17,7 @@ module C
     class << self
       attr_accessor :command
     end
-    self.command = Config::CONFIG['CPP']
+    self.command = RbConfig::CONFIG['CPP']
 
     attr_accessor :pwd, :include_path, :macros
 

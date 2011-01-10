@@ -6,7 +6,7 @@ require 'rake/testtask'
 require 'rake/gempackagetask'
 
 require 'rbconfig'
-dlext = (Config::CONFIG['DLEXT'] rescue nil) || 'so'
+dlext = (RbConfig::CONFIG['DLEXT'] rescue nil) || 'so'
 FILES = FileList['README', 'ChangeLog', '{lib,ext,doc,test}/**/*', 'ext/yylex.c', 'lib/cast/c.tab.rb']
 
 # cast_ext
@@ -43,9 +43,9 @@ task :irb => :lib do
 end
 
 INSTALL_MAP = {
-  File.expand_path('lib/cast')              => "#{Config::CONFIG['sitelibdir']}/cast",
-  File.expand_path('lib/cast.rb')           => "#{Config::CONFIG['sitelibdir']}/cast.rb",
-  File.expand_path("ext/cast_ext.#{dlext}") => "#{Config::CONFIG['sitearchdir']}/cast_ext.#{dlext}"
+  File.expand_path('lib/cast')              => "#{RbConfig::CONFIG['sitelibdir']}/cast",
+  File.expand_path('lib/cast.rb')           => "#{RbConfig::CONFIG['sitelibdir']}/cast.rb",
+  File.expand_path("ext/cast_ext.#{dlext}") => "#{RbConfig::CONFIG['sitearchdir']}/cast_ext.#{dlext}"
 }
 desc "Build and install."
 task :install => [:lib, :uninstall] do
