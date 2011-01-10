@@ -1,0 +1,8 @@
+*.bundle
+*.dll
+*.o
+*.so
+*.swp
+/ext/Makefile
+/ext/yylex.c
+/lib/cast/c.tab.rb
