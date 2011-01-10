@@ -77,6 +77,8 @@ spec = Gem::Specification.new do |s|
   s.autorequire = 'cast'
   s.test_file = 'test/run.rb'
   s.has_rdoc = false
+
+  s.add_development_dependency 'racc'
 end
 
 # Target: gem
