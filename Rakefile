@@ -2,16 +2,15 @@
 
 task :default => :test
 
+require 'rubygems'
 require 'rake/testtask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
-require 'rbconfig'
-dlext = (RbConfig::CONFIG['DLEXT'] rescue nil) || 'so'
 FILES = FileList['README', 'ChangeLog', '{lib,ext,doc,test}/**/*', 'ext/yylex.c', 'lib/cast/c.tab.rb']
 
 # cast_ext
 file 'ext/cast_ext.so' => FileList['ext/*.c', 'ext/yylex.c'] do |t|
-  FileUtils.cd 'ext' do
+  cd 'ext' do
     ruby 'extconf.rb'
     sh 'make'
   end
@@ -42,26 +41,6 @@ task :irb => :lib do
   sh 'irb -Ilib:ext -rcast'
 end
 
-INSTALL_MAP = {
-  File.expand_path('lib/cast')              => "#{RbConfig::CONFIG['sitelibdir']}/cast",
-  File.expand_path('lib/cast.rb')           => "#{RbConfig::CONFIG['sitelibdir']}/cast.rb",
-  File.expand_path("ext/cast_ext.#{dlext}") => "#{RbConfig::CONFIG['sitearchdir']}/cast_ext.#{dlext}"
-}
-desc "Build and install."
-task :install => [:lib, :uninstall] do
-  INSTALL_MAP.each do |src, dst|
-    cp_r src, dst
-  end
-end
-
-desc "Uninstall."
-task :uninstall do
-  INSTALL_MAP.each do |src, dst|
-    rm_r(dst) if File.exist?(dst)
-  end
-end
-
-# Gem spec
 spec = Gem::Specification.new do |s|
   s.name = 'cast'
   s.summary = "C parser and AST constructor."
@@ -79,26 +58,22 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = false
 
   s.add_development_dependency 'racc'
+  s.requirements << 're2c'
 end
 
-# Target: gem
-# Target: package
-# Target: clobber_package
-# Target: repackage
-Rake::GemPackageTask.new(spec) do |task|
-  task.need_tar = true
-  task.need_zip = true
-end
+Gem::PackageTask.new spec
 
-desc "Remove temporary files in build process."
+desc "Remove temporary files in build process"
 task :clean do
-  sh 'rm -f ext/*.o'
+  rm_f 'ext/*.o'
 end
 
-desc "Remove all files built from initial source files (i.e., return source tree to pristine state)."
-task :clobber => [:clean, :clobber_package] do
-  sh 'rm -f ext/yylex.c'
-  sh 'rm -f lib/cast/c.tab.rb'
-  sh 'rm -f ext/cast_ext.so'
-  sh 'rm -f ext/Makefile'
+desc "Remove all files built from initial source files"
+task :clobber => [:clean] do
+  rm_f 'ext/yylex.c'
+  rm_f 'lib/cast/c.tab.rb'
+  rm_f 'ext/cast_ext.so'
+  rm_f 'ext/Makefile'
+  rm_f 'pkg'
 end
+
