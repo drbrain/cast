@@ -9,15 +9,16 @@ require 'rubygems/package_task'
 FILES = FileList['README', 'ChangeLog', '{lib,ext,doc,test}/**/*', 'ext/yylex.c', 'lib/cast/c.tab.rb']
 
 # cast_ext
-file 'ext/cast_ext.so' => FileList['ext/*.c', 'ext/yylex.c'] do |t|
-  cd 'ext' do
+file 'ext/cast/cast_ext.so' =>
+     FileList['ext/cast/*.c', 'ext/cast/yylex.c'] do |t|
+  cd 'ext/cast' do
     ruby 'extconf.rb'
     sh 'make'
   end
 end
 
 # lexer
-file 'ext/yylex.c' => 'ext/yylex.re' do |t|
+file 'ext/cast/yylex.c' => 'ext/cast/yylex.re' do |t|
   sh "re2c #{t.prerequisites[0]} > #{t.name}"
 end
 
@@ -27,7 +28,10 @@ file 'lib/cast/c.tab.rb' => 'lib/cast/c.y' do |t|
 end
 
 desc "Build."
-task :lib => FileList['lib/cast/*.rb', 'lib/cast/c.tab.rb', 'ext/cast_ext.so']
+task :lib =>
+  FileList['lib/cast/*.rb',
+           'lib/cast/c.tab.rb',
+           'ext/cast/cast_ext.so']
 
 desc "Run unit tests."
 Rake::TestTask.new(:test => :lib) do |t|
@@ -65,15 +69,15 @@ Gem::PackageTask.new spec
 
 desc "Remove temporary files in build process"
 task :clean do
-  rm_f 'ext/*.o'
+  rm_f 'ext/cast/*.o'
 end
 
 desc "Remove all files built from initial source files"
 task :clobber => [:clean] do
-  rm_f 'ext/yylex.c'
+  rm_f 'ext/cast/Makefile'
+  rm_f 'ext/cast/cast_ext.so'
+  rm_f 'ext/cast/yylex.c'
   rm_f 'lib/cast/c.tab.rb'
-  rm_f 'ext/cast_ext.so'
-  rm_f 'ext/Makefile'
   rm_f 'pkg'
 end
 
