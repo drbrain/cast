@@ -4,8 +4,8 @@
 *.so
 *.swp
 /doc
-/ext/Makefile
-/ext/yylex.c
+/ext/cast/Makefile
+/ext/cast/yylex.c
 /lib/cast/c.tab.rb
 /pkg
 /tmp
